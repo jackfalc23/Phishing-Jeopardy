@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phishing Challenge | EDCI 338</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --blue: #005493;
+        --navy: #082b49;
+        --gold: #f5aa1c;
+        --red: #c63527;
+        --ink: #152e43;
+        --line: #cad9e4;
+        font-family: system-ui, sans-serif;
+        background: #f1f6fa;
+        color: var(--ink);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      [hidden] {
+        display: none !important;
+      }
+
+      .wrap {
+        width: min(calc(100% - 2rem), 74rem);
+        margin-inline: auto;
+      }
+
+      .masthead {
+        background: white;
+        border-bottom: 4px solid var(--gold);
+      }
+      .masthead .wrap,
+      .board-heading,
+      .dialog-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .masthead .wrap {
+        min-height: 4rem;
+        font-weight: 800;
+      }
+      .course {
+        color: var(--blue);
+        font-size: 0.875rem;
+        white-space: nowrap;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr minmax(13rem, 17rem);
+        gap: 1.25rem;
+        align-items: center;
+        margin-top: 1.25rem;
+        padding: clamp(1.25rem, 4vw, 3rem);
+        border-radius: 1rem;
+        background: linear-gradient(120deg, var(--navy), var(--blue));
+        color: white;
+        box-shadow: inset 0 -4px var(--gold);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+      h1 {
+        font-size: clamp(2.3rem, 7vw, 5rem);
+        line-height: 0.96;
+        letter-spacing: -0.055em;
+        margin-bottom: 0.75rem;
+      }
+
+      .hero p {
+        max-width: 36rem;
+        margin-bottom: 0;
+        line-height: 1.55;
+      }
+      .accent {
+        color: var(--gold);
+      }
+      .scorecard {
+        display: grid;
+        gap: 0.45rem;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background: white;
+        color: var(--navy);
+      }
+
+      #score {
+        font-size: 2rem;
+        font-weight: 800;
+      }
+      progress {
+        width: 100%;
+        accent-color: var(--blue);
+      }
+      .game {
+        margin-top: 1.5rem;
+      }
+      .board-heading {
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+      }
+      .board-heading h2 {
+        margin-bottom: 0;
+      }
+      .board {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 0.65rem;
+      }
+      .category {
+        display: grid;
+        grid-template-rows: 4.75rem repeat(5, minmax(2.75rem, auto));
+        gap: 0.4rem;
+      }
+      .category h3 {
+        display: grid;
+        place-items: center;
+        margin: 0;
+        padding: 0.4rem;
+        text-align: center;
+        font-size: 0.9rem;
+        color: white;
+        background: var(--navy);
+        border-top: 3px solid var(--red);
+        border-radius: 0.55rem 0.55rem 0.25rem 0.25rem;
+      }
+
+      button {
+        min-height: 2.75rem;
+        padding: 0.4rem 0.75rem;
+        border: 1px solid var(--line);
+        border-radius: 0.45rem;
+        background: white;
+        color: var(--blue);
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover:not(:disabled) {
+        background: #fff0cd;
+      }
+      button:disabled {
+        cursor: default;
+        opacity: 0.7;
+      }
+      .tile {
+        font-size: 1.1rem;
+      }
+      .tile[data-result='correct'] {
+        color: #075644;
+        background: #e5f4ed;
+        opacity: 1;
+      }
+      .tile[data-result='incorrect'] {
+        color: #4c5d69;
+        background: #e5ecf2;
+        opacity: 1;
+      }
+      .primary {
+        background: var(--blue);
+        color: white;
+        border-color: var(--blue);
+      }
+      .primary:hover:not(:disabled) {
+        background: var(--navy);
+      }
+      :focus-visible {
+        outline: 3px solid #a24d00;
+        outline-offset: 3px;
+      }
+
+      #complete {
+        padding: 0.85rem;
+        background: #fff0cd;
+        border-left: 4px solid var(--gold);
+      }
+      footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        margin-top: 1.25rem;
+        padding: 1rem 0;
+        border-top: 1px solid var(--line);
+        font-size: 0.875rem;
+      }
+
+      a {
+        color: var(--blue);
+      }
+      dialog {
+        width: min(38rem, calc(100% - 1.5rem));
+        max-height: calc(100% - 1.5rem);
+        overflow: auto;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-top: 5px solid var(--gold);
+        border-radius: 0.8rem;
+        padding: clamp(1rem, 4vw, 1.5rem);
+      }
+
+      dialog::backdrop {
+        background: #041d32b8;
+      }
+      dialog h2 {
+        font-size: clamp(1.15rem, 3vw, 1.5rem);
+      }
+      dialog p {
+        line-height: 1.55;
+      }
+      .dialog-top {
+        margin-bottom: 1rem;
+      }
+      #question-meta {
+        color: var(--blue);
+        font-weight: 750;
+      }
+      fieldset {
+        display: grid;
+        gap: 0.45rem;
+        min-width: 0;
+        margin: 0 0 1rem;
+        padding: 0;
+        border: 0;
+      }
+      legend {
+        margin-bottom: 0.5rem;
+      }
+      .choice {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding: 0.65rem;
+        border: 1px solid var(--line);
+        border-radius: 0.45rem;
+        overflow-wrap: anywhere;
+        cursor: pointer;
+      }
+
+      .choice:has(input:checked) {
+        background: #eaf3fa;
+        border-color: var(--blue);
+      }
+      .choice input {
+        flex: none;
+        margin: 0.25rem 0 0;
+        accent-color: var(--blue);
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.5rem;
+      }
+
+      @media (max-width: 54rem) {
+        .board {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 36rem) {
+        .hero {
+          grid-template-columns: 1fr;
+        }
+        .board {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="wrap">
+        <span>University of Victoria</span>
+        <span class="course">EDCI 338</span>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero" aria-labelledby="title">
+        <div>
+          <h1 id="title">
+            Phishing<br />Challenge<span class="accent">.</span>
+          </h1>
+          <p>
+            Choose a point value and answer a question to practise spotting and
+            responding to phishing.
+          </p>
+        </div>
+        <div class="scorecard" aria-live="polite" aria-atomic="true">
+          <strong>Your score</strong>
+          <div><span id="score">0</span> / 9,000 pts</div>
+          <progress
+            id="progress"
+            max="30"
+            value="0"
+            aria-label="Questions answered"
+          ></progress>
+          <span id="progress-label">0 of 30 answered</span>
+        </div>
+      </section>
+
+      <section class="game" aria-labelledby="board-title">
+        <div class="board-heading">
+          <h2 id="board-title" tabindex="-1">Game board</h2>
+          <button id="restart" type="button" disabled>Restart game</button>
+        </div>
+        <p id="complete" tabindex="-1" hidden></p>
+        <div id="board" class="board"></div>
+        <noscript><p>Enable JavaScript in your browser to play.</p></noscript>
+      </section>
+
+      <footer>
+        <span>All scenarios are fictional.</span>
+        <a
+          href="https://onlineacademiccommunity.uvic.ca/phishbowl/"
+          target="_blank"
+          rel="noopener"
+          >UVic Phish Bowl</a
+        >
+        <a
+          href="https://www.uvic.ca/systems/infosec/"
+          target="_blank"
+          rel="noopener"
+          >UVic Information Security</a
+        >
+      </footer>
+    </main>
+
+    <dialog id="question-dialog" aria-labelledby="question-title">
+      <div class="dialog-top">
+        <span id="question-meta"></span>
+        <button id="close-question" type="button">Close</button>
+      </div>
+      <h2 id="question-title" tabindex="-1"></h2>
+      <form id="question-form">
+        <fieldset id="choices"><legend>Choose one answer</legend></fieldset>
+        <button id="submit-answer" class="primary" type="submit" disabled>
+          Submit answer
+        </button>
+      </form>
+      <section id="feedback" hidden>
+        <h3 id="result" tabindex="-1"></h3>
+        <p id="correct-answer"></p>
+        <p id="explanation"></p>
+        <button id="return-to-board" class="primary" type="button">
+          Back to board
+        </button>
+      </section>
+    </dialog>
+
+    <dialog id="restart-dialog" aria-labelledby="restart-title">
+      <h2 id="restart-title">Restart the game?</h2>
+      <p>This clears your score and makes all 30 questions available again.</p>
+      <form method="dialog" class="actions">
+        <button value="cancel" autofocus>Keep playing</button>
+        <button class="primary" value="restart">Restart game</button>
+      </form>
+    </dialog>
+
+    <script>
+      // Each row contains a question, four choices, the correct letter, and feedback.
+      const bank = [
+        [
+          'Phishing 101',
+          [
+            [
+              'What is phishing?',
+              [
+                'A method of encrypting personal information online.',
+                'A fraudulent attempt to obtain sensitive information or encourage unsafe actions.',
+                'A technique used to monitor internet connection speeds.',
+                'A method of displaying unwanted advertisements.',
+              ],
+              'B',
+              'Phishing involves deceptive communications intended to manipulate individuals into revealing information or taking unsafe actions.',
+            ],
+            [
+              'What is phishing conducted through text messages called?',
+              ['Spoofing', 'Vishing', 'Pharming', 'Smishing'],
+              'D',
+              'Smishing combines SMS and phishing, while vishing refers to phishing through voice communications.',
+            ],
+            [
+              'What distinguishes spear phishing from general phishing?',
+              [
+                'It targets specific individuals or organizations using personalized information.',
+                'It exclusively targets individuals through telephone calls.',
+                'It relies on sending identical messages to large audiences.',
+                'It exclusively involves fraudulent banking websites.',
+              ],
+              'A',
+              'Spear phishing targets specific recipients and may use personal or organizational information to increase credibility.',
+            ],
+            [
+              'What does HTTPS indicate when visiting a website?',
+              [
+                'The website has been verified as a legitimate business.',
+                'The website has been scanned for fraudulent content.',
+                'The connection between your browser and the website is encrypted.',
+                'The website cannot collect your personal information.',
+              ],
+              'C',
+              'HTTPS encrypts your connection but does not guarantee that a website is legitimate or safe.',
+            ],
+            [
+              'Why can sophisticated phishing attempts be difficult to recognize?',
+              [
+                'They can only be detected using paid antivirus software.',
+                'They can imitate legitimate communications without displaying obvious warning signs.',
+                'They are sent exclusively through encrypted messaging applications.',
+                'They automatically bypass every cybersecurity protection.',
+              ],
+              'B',
+              'Sophisticated scams may contain professional branding, accurate grammar and convincing personal details. Appearance alone cannot establish authenticity.',
+            ],
+          ],
+        ],
+        [
+          'Spot the Red Flags',
+          [
+            [
+              'Which of the following is a common phishing warning sign?',
+              [
+                'Receiving an expected order confirmation.',
+                'Receiving a password reset email you requested.',
+                'Receiving a scheduled university newsletter.',
+                'Receiving an unexpected prize notification for a competition you never entered.',
+              ],
+              'D',
+              'Unexpected rewards are commonly used to persuade individuals to disclose personal information or transfer money.',
+            ],
+            [
+              'Which request in an unexpected text message should raise the greatest concern?',
+              [
+                'Providing your online banking password.',
+                'Reviewing publicly available branch hours.',
+                'Reading a general financial literacy article.',
+                'Checking the date of a public holiday.',
+              ],
+              'A',
+              'Unsolicited requests for passwords or authentication credentials are significant warning signs.',
+            ],
+            [
+              'An email’s display name reads "University IT Support," but the sender uses an Outlook address. Which detail warrants further investigation?',
+              [
+                'The email’s font size.',
+                'The time the email was received.',
+                'The mismatch between the sender’s address and their claimed organization.',
+                'The length of the email’s subject line.',
+              ],
+              'C',
+              'Display names can be misleading. Examining the actual sender address can help identify impersonation attempts.',
+            ],
+            [
+              'Which URL should raise suspicion when attempting to access university.example? (All addresses are fictional.)',
+              [
+                'university.example/student',
+                'university.example.account-check.invalid',
+                'university.example/library',
+                'portal.university.example',
+              ],
+              'B',
+              'Option B belongs to a different domain. The presence of a familiar organization name within a URL does not establish ownership.',
+            ],
+            [
+              'You receive an unexpected document from a familiar contact that asks you to enable macros. Which combination presents the greatest security concern?',
+              [
+                'The familiar sender and professional formatting.',
+                'The document’s title and file size.',
+                'The email’s signature and use of formal language.',
+                'The unexpected attachment and request to enable macros.',
+              ],
+              'D',
+              'Unexpected attachments may contain malicious content. Enabling macros can create additional security risks, even when the sender appears familiar.',
+            ],
+          ],
+        ],
+        [
+          'Real or Scam?',
+          [
+            [
+              'You receive a message claiming you have won $5,000 but must pay a $100 processing fee. What is the most likely explanation?',
+              [
+                'An advance-fee scam.',
+                'A legitimate promotional reward.',
+                'A standard identity verification procedure.',
+                'A refundable banking deposit.',
+              ],
+              'A',
+              'Fraudsters frequently request upfront payments in exchange for prizes or rewards that do not exist.',
+            ],
+            [
+              'Which password reset email is most likely legitimate?',
+              [
+                'An unexpected email threatening to suspend your account.',
+                'An email requesting that you reply with your current password.',
+                'An email received immediately after requesting a reset through the official website.',
+                'An email requiring payment to recover your password.',
+              ],
+              'C',
+              'A communication you initiated through a verified website is generally more trustworthy than an unsolicited request.',
+            ],
+            [
+              'You receive a text claiming your package cannot be delivered until you pay a small fee through an unfamiliar website. What is the most appropriate conclusion?',
+              [
+                'It is legitimate because the requested fee is small.',
+                'It is potentially fraudulent and requires independent verification.',
+                'It is legitimate if it contains a tracking number.',
+                'It is safe if the website displays a padlock.',
+              ],
+              'B',
+              'Fraudulent delivery notifications often impersonate shipping companies. Verify delivery information through the company’s official website or application.',
+            ],
+            [
+              'You receive a banking notification about suspicious account activity. Which action provides the strongest evidence that the reported activity is genuine?',
+              [
+                'Checking whether the email contains the bank’s logo.',
+                'Checking whether the message includes your full name.',
+                'Checking whether the email contains spelling mistakes.',
+                'Independently opening your official banking app and confirming the activity.',
+              ],
+              'D',
+              'Independent verification through a trusted channel provides stronger evidence than the appearance of a communication.',
+            ],
+            [
+              'Your professor’s genuine university email address sends you an unusual request to purchase gift cards. Why should you still verify the request?',
+              [
+                'University email accounts cannot send financial requests.',
+                'A legitimate email account may have been compromised.',
+                'Gift cards are illegal to purchase for university activities.',
+                'University emails are automatically considered fraudulent when sent outside class hours.',
+              ],
+              'B',
+              'Even legitimate accounts can be compromised. Unusual requests should be independently verified through a separate, trusted communication channel.',
+            ],
+          ],
+        ],
+        [
+          'The Psychology of Scams',
+          [
+            [
+              'A message states, "Respond within 10 minutes or your account will be deleted." Which tactic is being used?',
+              ['Reciprocity', 'Social proof', 'Urgency', 'Familiarity'],
+              'C',
+              'Urgency pressures recipients into making decisions before they have time to evaluate the situation.',
+            ],
+            [
+              'A scammer impersonates a police officer and threatens someone with arrest unless they immediately pay. Which psychological tactics are primarily being used?',
+              [
+                'Authority and fear.',
+                'Familiarity and curiosity.',
+                'Reciprocity and generosity.',
+                'Social proof and belonging.',
+              ],
+              'A',
+              'Impersonating an authority figure can increase perceived credibility, while fear can discourage critical thinking and independent verification.',
+            ],
+            [
+              'A fraudulent job advertisement promises students thousands of dollars for very little work. Which motivation is primarily being exploited?',
+              [
+                'The desire to protect personal privacy.',
+                'The need for social belonging.',
+                'The desire for academic recognition.',
+                'The desire for financial gain or financial security.',
+              ],
+              'D',
+              'Scams frequently exploit existing needs and motivations, including financial pressures experienced by students.',
+            ],
+            [
+              'A student assumes that an email is legitimate because it contains a familiar university logo. Which concept best explains this assumption?',
+              [
+                'Cognitive offloading.',
+                'An inaccurate mental model.',
+                'Intrinsic motivation.',
+                'Social constructivism.',
+              ],
+              'B',
+              'Norman’s (1983) concept of mental models explains how individuals develop internal representations of systems. These representations may contain inaccurate assumptions, such as associating professional branding with authenticity.',
+            ],
+            [
+              'Why might a student be particularly vulnerable to an academic account suspension scam during exam season?',
+              [
+                'University accounts automatically become less secure during exams.',
+                'Phishing messages become more technically advanced during exams.',
+                'Stress, distraction and the personal relevance of the message may reduce careful evaluation.',
+                'Students temporarily lose their previous cybersecurity knowledge.',
+              ],
+              'C',
+              'Phishing susceptibility can depend on circumstances. Stress, competing responsibilities and emotionally relevant messages may influence decision-making.',
+            ],
+          ],
+        ],
+        [
+          'Scams in Everyday Life',
+          [
+            [
+              'Someone advertises an apartment online and demands a deposit before allowing you to view it or verify their identity. What type of scam could this be?',
+              [
+                'Investment scam.',
+                'Rental scam.',
+                'Employment scam.',
+                'Romance scam.',
+              ],
+              'B',
+              'Rental scams exploit individuals searching for housing. Independently verify the property and rental arrangement before transferring money.',
+            ],
+            [
+              'A potential employer offers you a remote job but requires an upfront recruitment fee. What is the safest response?',
+              [
+                'Pay the fee if the salary is competitive.',
+                'Request a discount on the recruitment fee.',
+                'Pay the fee if the employer provides a professional-looking contract.',
+                'Avoid paying and independently verify the employer and job posting.',
+              ],
+              'D',
+              'Fraudulent employers may use attractive job opportunities to obtain money or personal information from applicants.',
+            ],
+            [
+              'A friend messages you on Instagram asking for a verification code sent to your phone. What is the greatest risk of sharing it?',
+              [
+                'Someone could use the code to gain unauthorized access to your account.',
+                'Your Instagram account will automatically become public.',
+                'Your phone number will automatically be disconnected.',
+                'Your Instagram profile will be permanently deleted.',
+              ],
+              'A',
+              'Authentication codes protect account access. Never share them with someone requesting them through an unsolicited message, even if that person appears to be a friend.',
+            ],
+            [
+              'An online marketplace buyer claims they have accidentally overpaid and asks you to refund the difference. What should you do first?',
+              [
+                'Refund the difference if they provide a payment screenshot.',
+                'Refund the difference using a different payment method.',
+                'Independently verify the original payment through your financial account or payment provider.',
+                'Refund the difference if the buyer has positive reviews.',
+              ],
+              'C',
+              'Screenshots and payment confirmations can be fraudulent. Verify transactions through a trusted financial platform before transferring any money.',
+            ],
+            [
+              'A new employer asks you to receive money into your personal bank account and transfer it to another individual. What is the greatest potential risk?',
+              [
+                'Accidentally registering as a freelance worker.',
+                'Becoming involved in a money mule scheme and potentially transferring stolen funds.',
+                'Exceeding your daily online banking transaction limit.',
+                'Receiving your salary through an unconventional payroll system.',
+              ],
+              'B',
+              'Fraudulent employment schemes may recruit individuals as money mules, exposing them to financial losses and potential legal consequences.',
+            ],
+          ],
+        ],
+        [
+          'Think Before You Click',
+          [
+            [
+              'Which security feature requires more than one form of verification when accessing an account?',
+              [
+                'Virtual private network (VPN).',
+                'Automatic software updates.',
+                'Password manager.',
+                'Multi-factor authentication (MFA).',
+              ],
+              'D',
+              'MFA provides an additional layer of protection when passwords are compromised.',
+            ],
+            [
+              'You receive an unexpected email asking you to update your banking information. What is the safest way to verify the request?',
+              [
+                'Reply to the email asking whether it is genuine.',
+                'Independently access your bank’s official website or application.',
+                'Click the link to determine whether the website looks legitimate.',
+                'Call the telephone number provided in the email.',
+              ],
+              'B',
+              'Independently accessing an organization through a trusted channel avoids relying on potentially fraudulent links and contact information.',
+            ],
+            [
+              'What should you do when you receive a suspected phishing email through your university account?',
+              [
+                'Avoid interacting with it and report it through the university’s official reporting process.',
+                'Forward it to classmates so they can investigate.',
+                'Reply to the sender requesting proof of their identity.',
+                'Open the attachments to determine whether they are fraudulent.',
+              ],
+              'A',
+              'Reporting phishing attempts allows university security teams to investigate threats and protect other members of the community.',
+            ],
+            [
+              'You accidentally enter your university password into a fraudulent website. Which response is most appropriate?',
+              [
+                'Delete the email and wait for suspicious account activity.',
+                'Change the password directly through the link provided in the email.',
+                'Change the password through the official website, contact university IT security and secure other accounts using the same password.',
+                'Clear your browser history and restart your computer.',
+              ],
+              'C',
+              'Quickly securing compromised credentials and reporting the incident can reduce the likelihood of further unauthorized access.',
+            ],
+            [
+              'A scammer has accessed your email account and made unauthorized banking transactions. Which response provides the most comprehensive immediate protection?',
+              [
+                'Delete suspicious emails and monitor your bank account for further transactions.',
+                'Change your email password and wait for your bank to contact you.',
+                'Contact the scammer and request that the transactions be reversed.',
+                'Contact your bank, secure affected accounts, revoke unauthorized sessions, preserve evidence and report the incident.',
+              ],
+              'D',
+              'Rapid action can help limit financial losses and unauthorized access. Contact affected organizations directly and preserve relevant evidence for reporting.',
+            ],
+          ],
+        ],
+      ];
+
+      const letters = 'ABCD';
+      const byId = (id) => document.getElementById(id);
+      const board = byId('board');
+      const dialog = byId('question-dialog');
+      const restartDialog = byId('restart-dialog');
+      const form = byId('question-form');
+      const choices = byId('choices');
+      const submit = byId('submit-answer');
+      const feedback = byId('feedback');
+      const complete = byId('complete');
+      const restart = byId('restart');
+      const tiles = [];
+
+      let active = null;
+      let score = 0;
+      let answered = 0;
+
+      function updateScore() {
+        const formatted = score.toLocaleString('en-CA');
+        byId('score').textContent = formatted;
+        byId('progress').value = answered;
+        byId(
+          'progress-label'
+        ).textContent = `${answered} of ${tiles.length} answered`;
+        restart.disabled = answered === 0;
+        complete.hidden = answered !== tiles.length;
+        complete.textContent = complete.hidden
+          ? ''
+          : `Board complete! You earned ${formatted} of 9,000 points.`;
+      }
+
+      function openQuestion(card) {
+        active = card;
+        form.hidden = false;
+        feedback.hidden = true;
+        submit.disabled = true;
+        byId(
+          'question-meta'
+        ).textContent = `${card.category} · ${card.points} points`;
+        byId('question-title').textContent = card.question;
+        choices.querySelectorAll('label').forEach((label) => label.remove());
+
+        card.options.forEach((option, index) => {
+          const label = document.createElement('label');
+          label.className = 'choice';
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = 'answer';
+          radio.value = letters[index];
+          radio.required = true;
+          label.append(
+            radio,
+            document.createTextNode(`${letters[index]}. ${option}`)
+          );
+          choices.append(label);
+        });
+
+        dialog.showModal();
+        byId('question-title').focus();
+      }
+
+      bank.forEach(([category, questions]) => {
+        const column = document.createElement('section');
+        column.className = 'category';
+        const heading = document.createElement('h3');
+        heading.textContent = category;
+        column.append(heading);
+
+        questions.forEach(
+          ([question, options, correct, explanation], index) => {
+            const points = (index + 1) * 100;
+            const tile = document.createElement('button');
+            tile.type = 'button';
+            tile.className = 'tile';
+            tile.textContent = points;
+            const label = `${category}, ${points} points`;
+            tile.setAttribute('aria-label', label);
+            const card = {
+              tile,
+              label,
+              category,
+              points,
+              question,
+              options,
+              correct,
+              explanation,
+            };
+            tile.addEventListener('click', () => openQuestion(card));
+            tiles.push(card);
+            column.append(tile);
+          }
+        );
+
+        board.append(column);
+      });
+
+      form.addEventListener('change', () => {
+        submit.disabled = false;
+      });
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const picked = new FormData(form).get('answer');
+        if (!active || active.tile.disabled || !picked) return;
+
+        const { tile, label, points, options, correct, explanation } = active;
+        const isCorrect = picked === correct;
+        const outcome = isCorrect ? 'correct' : 'incorrect';
+        score += isCorrect ? points : 0;
+        answered += 1;
+        tile.disabled = true;
+        tile.dataset.result = outcome;
+        tile.textContent = `${points} ${isCorrect ? '✓' : '×'}`;
+        tile.setAttribute('aria-label', `${label}, ${outcome}`);
+        updateScore();
+
+        byId('result').textContent = isCorrect
+          ? `Correct! +${points} points`
+          : 'Incorrect · 0 points';
+        byId('correct-answer').textContent = `Correct answer: ${correct}. ${
+          options[letters.indexOf(correct)]
+        }`;
+        byId('explanation').textContent = explanation;
+        form.hidden = true;
+        feedback.hidden = false;
+        byId('result').focus();
+      });
+
+      byId('close-question').addEventListener('click', () => dialog.close());
+      byId('return-to-board').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('close', () => {
+        const previous = active;
+        active = null;
+        if (!previous) return;
+        if (!complete.hidden) {
+          complete.focus();
+          return;
+        }
+        if (!previous.tile.disabled) {
+          previous.tile.focus();
+          return;
+        }
+        const index = tiles.indexOf(previous);
+        const next = [...tiles.slice(index + 1), ...tiles.slice(0, index)].find(
+          (card) => !card.tile.disabled
+        );
+        next?.tile.focus();
+      });
+
+      restart.addEventListener('click', () => {
+        restartDialog.returnValue = '';
+        restartDialog.showModal();
+      });
+
+      restartDialog.addEventListener('close', () => {
+        if (restartDialog.returnValue !== 'restart') return;
+        score = 0;
+        answered = 0;
+        tiles.forEach(({ tile, label, points }) => {
+          tile.disabled = false;
+          delete tile.dataset.result;
+          tile.textContent = points;
+          tile.setAttribute('aria-label', label);
+        });
+        updateScore();
+        byId('board-title').focus();
+      });
+
+      updateScore();
+    </script>
+  </body>
+</html>
