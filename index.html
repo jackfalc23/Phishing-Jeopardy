@@ -1391,5 +1391,130 @@
         installPhishingChallengeDesign();
       }
     </script>
+    <style>
+      .pc-music-controls {
+        display: flex;
+        justify-content: flex-end;
+        margin: .75rem 0;
+      }
+    
+      #pc-music-toggle {
+        min-height: 2.75rem;
+        padding: .45rem .9rem;
+        border: 1px solid #145bce;
+        border-radius: 2rem;
+        background: #fff;
+        color: #071d49;
+        font: inherit;
+        font-weight: 750;
+        cursor: pointer;
+      }
+    
+      #pc-music-toggle[aria-pressed="true"] {
+        border-color: #ad7b14;
+        background: #fff0b9;
+      }
+    
+      #pc-music-toggle:focus-visible {
+        outline: 3px solid #9c4d00;
+        outline-offset: 3px;
+      }
+    </style>
+    
+    <script>
+      (() => {
+        const hero = document.querySelector(".hero");
+        const AudioEngine = window.AudioContext || window.webkitAudioContext;
+        if (!hero || !AudioEngine || document.getElementById("pc-music-toggle")) return;
+    
+        const controls = document.createElement("div");
+        controls.className = "pc-music-controls";
+    
+        const button = document.createElement("button");
+        button.id = "pc-music-toggle";
+        button.type = "button";
+        button.setAttribute("aria-label", "Background music");
+        button.setAttribute("aria-pressed", "false");
+        button.textContent = "♫ Music Off";
+        controls.append(button);
+        hero.after(controls);
+    
+        let context;
+        let loop;
+        let player;
+    
+        function createLoop(audio) {
+          const step = .32;
+          const melody = [
+            72, 76, 79, 76, 74, 72, 67, null,
+            69, 72, 76, 72, 74, 71, 67, null,
+            72, 76, 79, 81, 79, 76, 74, null,
+            71, 74, 77, 74, 72, 67, 72, null
+          ];
+          const bass = [48, 45, 53, 43];
+          const rate = audio.sampleRate;
+          const buffer = audio.createBuffer(1, Math.ceil(melody.length * step * rate), rate);
+          const samples = buffer.getChannelData(0);
+    
+          function addNote(note, start, duration, volume) {
+            const offset = Math.round(start * rate);
+            const length = Math.min(Math.round(duration * rate), samples.length - offset);
+            const frequency = 440 * 2 ** ((note - 69) / 12);
+    
+            for (let i = 0; i < length; i++) {
+              const time = i / rate;
+              const envelope = Math.min(1, time / .025, (length - i - 1) / (rate * .1));
+              const phase = 2 * Math.PI * frequency * time;
+              samples[offset + i] += volume * envelope
+                * (Math.sin(phase) + .16 * Math.sin(phase * 3));
+            }
+          }
+    
+          melody.forEach((note, i) => {
+            if (note !== null) addNote(note, i * step, .27, .035);
+          });
+          bass.forEach((note, i) => {
+            addNote(note, i * 8 * step, .9, .035);
+            addNote(note + 7, (i * 8 + 4) * step, .9, .025);
+          });
+    
+          return buffer;
+        }
+    
+        function setButton(playing) {
+          button.setAttribute("aria-pressed", String(playing));
+          button.textContent = playing ? "♫ Music On" : "♫ Music Off";
+        }
+    
+        button.addEventListener("click", async () => {
+          if (player) {
+            player.stop();
+            player.disconnect();
+            player = null;
+            setButton(false);
+            return;
+          }
+    
+          button.disabled = true;
+          try {
+            context ??= new AudioEngine();
+            await context.resume();
+            loop ??= createLoop(context);
+    
+            const source = context.createBufferSource();
+            source.buffer = loop;
+            source.loop = true;
+            source.connect(context.destination);
+            source.start();
+            player = source;
+            setButton(true);
+          } catch {
+            button.textContent = "Music unavailable · retry";
+          } finally {
+            button.disabled = false;
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
