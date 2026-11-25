@@ -899,5 +899,497 @@
 
       updateScore();
     </script>
+    <style>
+      body.pc-redesign {
+        --deep: #071d49;
+        --blue: #0056a6;
+        --gold: #ffb81c;
+        --ink: #102443;
+        --paper: #edf5fc;
+        color: var(--ink);
+        min-height: 100vh;
+        background:
+          radial-gradient(ellipse at 0 12%, #d1ecfb, transparent 48%),
+          radial-gradient(ellipse at 100% 5%, #dce5fa, transparent 45%),
+          radial-gradient(ellipse at 50% 100%, #d5ebfc, transparent 48%),
+          var(--paper);
+      }
+    
+      .pc-redesign .wrap { width: min(93rem, calc(100% - 2rem)); }
+      .pc-redesign .masthead { background: #fff; border-bottom: 4px solid var(--gold); }
+      .pc-redesign .masthead-content { justify-content: flex-start; gap: clamp(.5rem, 2vw, 1.5rem); }
+      .pc-redesign .university {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        font-size: clamp(1rem, 2.2vw, 1.45rem);
+        font-weight: 850;
+      }
+      .pc-redesign .university svg { width: clamp(1.6rem, 3vw, 2.3rem); flex: none; }
+      .pc-redesign .course { padding-left: .65rem; border-left: 1px solid #a8c3dd; }
+    
+      .pc-redesign .hero {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        grid-template-columns: minmax(0, 1.57fr) minmax(4.5rem, .5fr)
+          minmax(0, .96fr) minmax(0, 1.04fr);
+        align-items: center;
+        gap: clamp(.65rem, 1.55vw, 1.45rem);
+        padding: clamp(1rem, 2.7vw, 2.4rem);
+        border: 1px solid #4389c9;
+        border-radius: clamp(1.35rem, 3vw, 2.6rem);
+        background: radial-gradient(ellipse at 78% 0, #0674b5, transparent 54%),
+          linear-gradient(120deg, #063a77, #071d49 52%, #06458f);
+        box-shadow: 0 15px 35px #1d60b533;
+      }
+    
+      .pc-redesign .hero::before,
+      .pc-redesign .hero::after {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+      }
+    
+      .pc-redesign .hero::before {
+        inset: -30% -5% 13% 35%;
+        border-top: 2rem solid #1397ff38;
+        border-radius: 45%;
+        transform: rotate(-24deg);
+      }
+    
+      .pc-redesign .hero::after {
+        inset: auto -9% -3.4rem;
+        height: 6rem;
+        border-radius: 50%;
+        transform: rotate(-4deg);
+        background: linear-gradient(95deg, #007fda, #00b5df 45%, #12488c 80%);
+        box-shadow: 0 -12px #139ff438;
+      }
+    
+      .pc-title { display: flex; align-items: center; gap: clamp(.4rem, 1vw, 1rem); }
+      .pc-shield { width: clamp(2.6rem, 5.6vw, 5.7rem); flex: none; filter: drop-shadow(0 0 10px #2bd5ff80); }
+      .pc-redesign .hero h1 {
+        margin: 0 0 .75rem;
+        font-size: clamp(2.05rem, 4.65vw, 5rem);
+        font-weight: 900;
+        font-style: italic;
+        line-height: .96;
+        letter-spacing: -.055em;
+        text-shadow: 0 4px 6px #02174199;
+      }
+    
+      .pc-redesign .hero h1 span { color: #ffd15a; }
+      .pc-redesign .hero p { font-size: clamp(.95rem, 1.25vw, 1.13rem); }
+      .pc-envelope { width: 100%; max-height: 14rem; filter: drop-shadow(0 8px 12px #00153599); }
+    
+      .pc-mission {
+        padding: .85rem;
+        border: 1px solid #55cfff;
+        border-radius: 1.05rem;
+        background: #071d49aa;
+      }
+    
+      .pc-mission h2 {
+        display: inline-block;
+        margin: 0 0 .6rem;
+        padding: .3rem .6rem;
+        border-radius: 2rem;
+        color: var(--deep);
+        background: linear-gradient(#ffe891, #ffb81c);
+        font-size: clamp(1rem, 1.4vw, 1.2rem);
+      }
+    
+      .pc-mission ul { display: grid; gap: .55rem; margin: 0; padding: 0; list-style: none; }
+      .pc-mission li { display: grid; grid-template-columns: 1.2rem 1fr; gap: .35rem; line-height: 1.35; }
+      .pc-mission li span { color: #a9ebff; }
+      .pc-redesign .scorecard {
+        background: linear-gradient(145deg, #fff, #e1eefa);
+        border: 1px solid #fff;
+        border-radius: 1.15rem;
+        box-shadow: 0 8px 20px #06183f55;
+        padding: .9rem;
+      }
+    
+      .pc-redesign .score-total strong { font-size: clamp(2rem, 3.4vw, 3rem); }
+      .pc-redesign .score-label { font-size: 1.1rem; font-weight: 850; }
+      .pc-redesign .scorecard progress { height: .7rem; background: #c5d3e8; }
+      .pc-redesign progress::-webkit-progress-bar { background: #c5d3e8; }
+      .pc-redesign progress::-webkit-progress-value {
+        background: linear-gradient(90deg, #145bce, #008f95);
+        transition: width .3s ease;
+      }
+      .pc-redesign progress::-moz-progress-bar { background: linear-gradient(90deg, #145bce, #008f95); }
+    
+      .pc-streaks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
+      .pc-streaks div, .pc-medal {
+        padding: .45rem .55rem;
+        border: 1px solid #cadbeb;
+        border-radius: .65rem;
+        background: #e7f0fa;
+      }
+      .pc-streaks span, .pc-streaks strong, .pc-medal span, .pc-medal small { display: block; }
+      .pc-streaks span, .pc-medal small { font-size: .875rem; line-height: 1.3; }
+      .pc-streaks strong { font-size: 1.2rem; }
+      .pc-medal { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: .55rem; }
+      .pc-medal > span { font-size: 1.2rem; }
+      .pc-medal[data-tier="bronze"] { background: #f7e3d5; border-color: #bc8b6b; }
+      .pc-medal[data-tier="silver"] { background: #e3ebf5; border-color: #96abc1; }
+      .pc-medal[data-tier="gold"] { background: #fff0b9; border-color: #c6992f; }
+    
+      .pc-redesign .game { margin-top: clamp(1.5rem, 3vw, 2.7rem); }
+      .pc-redesign .board-heading h2 {
+        color: var(--deep);
+        font-size: clamp(1.55rem, 3.2vw, 2.5rem);
+        font-weight: 900;
+      }
+      .pc-redesign #restart {
+        border-radius: 2rem;
+        border-color: #145bce;
+        box-shadow: 0 4px 10px #164f9a2b;
+      }
+    
+      .pc-redesign .board { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(.55rem, 1vw, .95rem); }
+      .pc-redesign .category { grid-template-rows: 6.4rem repeat(5, minmax(3rem, auto)); gap: .55rem; }
+      .pc-redesign .category h3 {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: .3rem;
+        padding: .5rem;
+        border: 1px solid #ffffff70;
+        border-radius: 1rem;
+        background: linear-gradient(145deg, #ffffff25 0 24%, transparent 25%),
+          linear-gradient(155deg, var(--pc-category), var(--pc-category-dark) 72%);
+        box-shadow: 0 6px 12px #12375028;
+        font-size: clamp(.9rem, 1.25vw, 1.15rem);
+        line-height: 1.12;
+        text-shadow: 0 2px 2px #03153180;
+      }
+      .pc-category-icon {
+        width: 1.9rem;
+        height: 1.9rem;
+        flex: none;
+        fill: none;
+        stroke: #e5f7ff;
+        stroke-width: 1.65;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    
+      .pc-redesign .tile {
+        border: 1px solid #b67700;
+        border-radius: .95rem;
+        color: var(--deep);
+        background: linear-gradient(145deg, #fff 25%, #fff1c7 75%, #dceaf6);
+        box-shadow: 0 4px 8px #213c6e25, inset 0 0 0 1px #fff;
+        font-size: clamp(1.2rem, 2vw, 1.65rem);
+        font-weight: 850;
+        transition: transform .16s ease, box-shadow .16s ease;
+      }
+      .pc-redesign .tile:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 12px #294c7938, 0 0 12px #ffc94d88;
+      }
+      .pc-redesign .tile:active:not(:disabled) { transform: translateY(1px); }
+      .pc-redesign .tile[data-result="correct"] { background: #e0f2e8; color: #075644; }
+      .pc-redesign .tile[data-result="incorrect"] { background: #f9e9df; color: #783a24; }
+    
+      .pc-redesign dialog {
+        border-top-color: var(--pc-category, #ffb81c);
+        box-shadow: 0 16px 60px #00143673;
+      }
+      .pc-redesign dialog[open] { animation: pc-dialog-in .2s ease-out both; }
+      .pc-redesign #question-meta {
+        padding: .35rem .65rem;
+        border-radius: .55rem;
+        background: var(--pc-category-dark, #071d49);
+        color: white;
+      }
+      .pc-redesign .choice { padding: .75rem; border-radius: .65rem; }
+      .pc-redesign #feedback { padding: .9rem; border-radius: .65rem; background: #fff6e5; }
+      .pc-redesign #feedback[data-pc-result="correct"] { background: #eaf7ef; animation: pc-celebrate .32s ease-out; }
+      .pc-redesign #complete { border-radius: .65rem; animation: pc-celebrate .5s ease-out; }
+      .pc-redesign footer { justify-content: center; }
+      .pc-redesign :focus-visible { outline: 3px solid #9c4d00; outline-offset: 3px; }
+    
+      @keyframes pc-dialog-in { from { opacity: 0; transform: translateY(9px); } }
+      @keyframes pc-celebrate { from { transform: scale(.98); box-shadow: 0 0 0 6px #ffb81c55; } }
+    
+      @media (max-width: 75rem) {
+        .pc-redesign .hero { grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); }
+        .pc-envelope { display: none; }
+      }
+      @media (max-width: 58rem) {
+        .pc-redesign .hero { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .pc-redesign .hero-copy { grid-column: 1 / -1; }
+        .pc-redesign .board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      }
+      @media (max-width: 36rem) {
+        .pc-redesign .hero { grid-template-columns: minmax(0, 1fr); }
+        .pc-redesign .hero-copy { grid-column: auto; }
+        .pc-redesign .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .pc-redesign .category { grid-template-rows: 5.8rem repeat(5, minmax(2.8rem, auto)); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .pc-redesign *, .pc-redesign *::before, .pc-redesign *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+        .pc-redesign .tile:hover:not(:disabled),
+        .pc-redesign .tile:active:not(:disabled) { transform: none; }
+      }
+    </style>
+    
+    <script>
+      function installPhishingChallengeDesign() {
+        const hero = document.querySelector(".hero");
+        const dashboard = document.querySelector(".scorecard");
+        const scoreDisplay = document.getElementById("score");
+        const progress = document.getElementById("progress");
+        if (!hero || !dashboard || !scoreDisplay || !progress ||
+            document.body.classList.contains("pc-redesign")) return;
+    
+        document.body.classList.add("pc-redesign");
+    
+        const shield = `
+          <svg class="pc-shield" viewBox="0 0 92 106" aria-hidden="true">
+            <path d="M46 5 85 21v29c0 23-16 40-39 51C23 90 7 73 7 50V21Z"
+              fill="#008edc" stroke="#bef1ff" stroke-width="6"/>
+            <path d="M46 16 74 28v22c0 18-11 31-28 41Z" fill="#0860b4"/>
+            <path d="M35 52V41a11 11 0 0 1 22 0v11" stroke="white" stroke-width="5" fill="none"/>
+            <rect x="28" y="50" width="36" height="28" rx="6" fill="white"/>
+            <path d="M46 61v8" stroke="#075498" stroke-width="5" stroke-linecap="round"/>
+          </svg>`;
+    
+        const university = document.querySelector(".university");
+        if (university && !university.querySelector("svg")) {
+          university.insertAdjacentHTML("afterbegin", `
+            <svg viewBox="0 0 40 46" aria-hidden="true">
+              <path fill="#071d49" d="M2 2h36v21c0 10-7 17-18 22C9 40 2 33 2 23Z"/>
+              <path fill="#ffb81c" d="M5 5h30v16H5z"/>
+              <path fill="white" d="M10 21a10 10 0 0 1 20 0Z"/>
+              <path d="M6 26q7-5 14 0t14 0M8 32q6-4 12 0t12 0"
+                fill="none" stroke="#8bd5ff" stroke-width="2"/>
+            </svg>`);
+        }
+    
+        const heading = hero.querySelector("h1");
+        if (heading && !hero.querySelector(".pc-title")) {
+          const oldTitle = hero.querySelector(".hero-title");
+          const title = document.createElement("div");
+          title.className = "pc-title";
+          title.innerHTML = shield;
+          (oldTitle || heading).before(title);
+          heading.innerHTML = "Phishing<br><span>Challenge</span>";
+          title.append(heading);
+          oldTitle?.remove();
+        }
+    
+        hero.querySelector(".hero-art")?.remove();
+        hero.querySelector(".mission")?.remove();
+        dashboard.before(
+          htmlElement(`
+            <svg class="pc-envelope" viewBox="0 0 180 245" aria-hidden="true">
+              <g transform="translate(13 130) rotate(-13 77 47)">
+                <rect width="154" height="94" rx="12" fill="#d9efff" stroke="white" stroke-width="3"/>
+                <path d="m2 89 54-47m96 47-54-47M2 9l63 47q12 8 24 0l63-47"
+                  fill="none" stroke="#659bc4" stroke-width="2"/>
+                <path d="M77 17q4-5 8 0l20 33q4 7-4 7H61q-8 0-4-7Z" fill="#c84422"/>
+                <path d="M81 27v12m0 7v1" stroke="white" stroke-width="4" stroke-linecap="round"/>
+              </g>
+              <path d="M105 0 92 93q-2 15-14 14-12-1-12-15l2-13m-2 13-7-12"
+                stroke="#ffc34b" stroke-width="6" fill="none" stroke-linecap="round"/>
+              <circle cx="98" cy="48" r="10" stroke="#ffe087" stroke-width="4" fill="#075498"/>
+            </svg>`),
+          htmlElement(`
+            <aside class="pc-mission" aria-labelledby="pc-mission-title">
+              <h2 id="pc-mission-title"><span aria-hidden="true">◎</span> Your Mission</h2>
+              <ul>
+                <li><span aria-hidden="true">✦</span>Build your phishing awareness.</li>
+                <li><span aria-hidden="true">⌕</span>Spot common scams and red flags.</li>
+                <li><span aria-hidden="true">✓</span>Learn how to respond safely and confidently.</li>
+              </ul>
+            </aside>`)
+        );
+    
+        function htmlElement(markup) {
+          const template = document.createElement("template");
+          template.innerHTML = markup.trim();
+          return template.content.firstElementChild;
+        }
+    
+        const scoreLabel = dashboard.querySelector(".score-label");
+        if (scoreLabel) {
+          scoreLabel.innerHTML = '<span aria-hidden="true">🏆</span> Your Score';
+        }
+    
+        dashboard.querySelectorAll(".score-tier, .score-medal").forEach(element => element.remove());
+    
+        const existingStreaks = dashboard.querySelector(".streaks");
+        const streaks = existingStreaks || htmlElement(`
+          <div class="pc-streaks">
+            <div><span>Current streak</span><strong id="pc-current">0</strong></div>
+            <div><span>Best streak</span><strong id="pc-best">0</strong></div>
+          </div>`);
+        if (!existingStreaks) dashboard.append(streaks);
+    
+        const medal = htmlElement(`
+          <div class="pc-medal">
+            <span aria-hidden="true"></span>
+            <div><strong></strong><small></small></div>
+          </div>`);
+        dashboard.append(medal);
+    
+        const categoryDesign = [
+          ["#145bce", "#09255e", "M2 9l10-5 10 5-10 5-10-5Zm4 2v5q6 4 12 0v-5m4-2v7"],
+          ["#e96624", "#913324", "M12 3 2 20h20L12 3Zm0 6v5m0 3v.5"],
+          ["#008f95", "#075059", "M3 5h18v14H3zM3 6l9 7 9-7"],
+          ["#7544c6", "#392271", "M12 5c-2-4-7-2-7 2-4 2-4 7 0 9 0 5 5 6 7 2 2 4 7 3 7-2 4-2 4-7 0-9 0-4-5-6-7-2Zm0 0v13M5 7l3 3m11-3-3 3M5 16l3-3m11 3-3-3"],
+          ["#237bce", "#0a4686", "M4 4h16v12H4zM4 16l-2 4h20l-2-4M10 18h4"],
+          ["#23864b", "#0a4a35", "M10 8l10 8-5 1-2 4-3-13ZM10 4V1M6 6 3 3m3 7H2m12-5 2-3"]
+        ];
+    
+        const questionDialog = document.getElementById("question-dialog");
+    
+        function applyColours(element, [colour, dark]) {
+          element.style.setProperty("--pc-category", colour);
+          element.style.setProperty("--pc-category-dark", dark);
+        }
+    
+        document.querySelectorAll("#board .category").forEach((column, index) => {
+          const design = categoryDesign[index];
+          const title = column.querySelector("h3");
+          if (!design || !title) return;
+    
+          applyColours(column, design);
+          title.querySelector("svg")?.remove();
+          title.prepend(htmlElement(`
+            <svg class="pc-category-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="${design[2]}"/>
+            </svg>`));
+    
+          column.addEventListener("click", event => {
+            if (questionDialog && event.target.closest(".tile")) {
+              applyColours(questionDialog, design);
+            }
+          }, true);
+        });
+    
+        const boardTitle = document.getElementById("board-title");
+        const restartButton = document.getElementById("restart");
+        const continueButton = document.getElementById("return");
+        if (boardTitle) boardTitle.innerHTML = '<span aria-hidden="true">🎮</span> Game Board';
+        if (restartButton) restartButton.innerHTML = '<span aria-hidden="true">⟳</span> Restart Game';
+        if (continueButton) continueButton.textContent = "Continue";
+    
+        const tiers = [
+          { name: "Bronze", points: 5000, icon: "🥉" },
+          { name: "Silver", points: 7000, icon: "🥈" },
+          { name: "Gold", points: 8000, icon: "🥇" }
+        ];
+    
+        const format = new Intl.NumberFormat("en-CA");
+        const completion = document.getElementById("complete");
+        const feedbackPanel = document.getElementById("feedback");
+        const currentValue = streaks.querySelector("#pc-current");
+        const bestValue = streaks.querySelector("#pc-best");
+        const medalIcon = medal.querySelector("span");
+        const medalTitle = medal.querySelector("strong");
+        const medalDetail = medal.querySelector("small");
+        const canUseGameScore = typeof updateScore === "function" && typeof score === "number";
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    
+        function readPoints() {
+          return canUseGameScore ? score : Number(scoreDisplay.textContent.replace(/\D/g, "")) || 0;
+        }
+    
+        let previousPoints = readPoints();
+        let previousAnswered = progress.value;
+        let current = 0;
+        let best = 0;
+        let animationFrame;
+    
+        function renderDashboard() {
+          const points = readPoints();
+          const answeredCount = progress.value;
+          const gained = points > previousPoints;
+    
+          if (answeredCount < previousAnswered) {
+            current = 0;
+            best = 0;
+          } else if (answeredCount > previousAnswered) {
+            current = gained ? current + 1 : 0;
+            best = Math.max(best, current);
+            if (feedbackPanel) feedbackPanel.dataset.pcResult = gained ? "correct" : "incorrect";
+          }
+    
+          if (currentValue) currentValue.textContent = current;
+          if (bestValue) bestValue.textContent = best;
+    
+          let tierIndex = -1;
+          tiers.forEach((tier, index) => {
+            if (points >= tier.points) tierIndex = index;
+          });
+    
+          const earned = tiers[tierIndex];
+          const next = tiers[tierIndex + 1];
+          medal.dataset.tier = earned ? earned.name.toLowerCase() : "none";
+          medalIcon.textContent = earned?.icon || "◇";
+          medalTitle.textContent = earned ? `${earned.name} tier` : "Medal progress";
+          medalDetail.textContent = next
+            ? `${format.format(next.points - points)} points to ${next.name}`
+            : "Highest tier reached";
+    
+          if (completion && !completion.hidden && earned) {
+            completion.textContent =
+              `Board complete! You earned ${format.format(points)} of 9,000 points and reached ${earned.name} tier.`;
+          }
+    
+          previousPoints = points;
+          previousAnswered = answeredCount;
+        }
+    
+        if (canUseGameScore) {
+          const originalUpdateScore = updateScore;
+          updateScore = function (...args) {
+            if (animationFrame !== undefined) cancelAnimationFrame(animationFrame);
+            const from = Number(scoreDisplay.textContent.replace(/\D/g, "")) || 0;
+    
+            originalUpdateScore.apply(this, args);
+            renderDashboard();
+    
+            // The workspace redesign already animates its score when it has streaks.
+            if (existingStreaks || reducedMotion.matches || score <= from) return;
+    
+            const target = score;
+            const start = performance.now();
+            scoreDisplay.textContent = format.format(from);
+    
+            function animateScore(time) {
+              const amount = Math.min(1, (time - start) / 320);
+              scoreDisplay.textContent = format.format(Math.round(from + (target - from) * amount));
+              animationFrame = amount < 1 ? requestAnimationFrame(animateScore) : undefined;
+            }
+    
+            animationFrame = requestAnimationFrame(animateScore);
+          };
+        } else {
+          const observer = new MutationObserver(renderDashboard);
+          observer.observe(scoreDisplay, { childList: true, characterData: true, subtree: true });
+          observer.observe(progress, { attributes: true, attributeFilter: ["value"] });
+        }
+    
+        renderDashboard();
+      }
+    
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", installPhishingChallengeDesign, { once: true });
+      } else {
+        installPhishingChallengeDesign();
+      }
+    </script>
   </body>
 </html>
