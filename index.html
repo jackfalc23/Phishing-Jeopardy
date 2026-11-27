@@ -1,5 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
+  <style>
+  /* Phishing Challenge — classroom board */
+  :root body {
+    --classroom-navy: #071d49;
+    --classroom-gold: #ffb81c;
+    --classroom-line: #cad4e0;
+    background: #f4f6f9;
+    color: #152741;
+    font-family: system-ui, sans-serif;
+  }
+
+  :root body .wrap {
+    width: min(76rem, calc(100% - 2rem));
+  }
+
+  :root body .masthead {
+    background: #fff;
+    border-bottom: 3px solid var(--classroom-gold);
+  }
+
+  :root body .masthead-content {
+    min-height: 3.75rem;
+    justify-content: space-between;
+  }
+
+  :root body .university {
+    color: var(--classroom-navy);
+    font-size: 1.05rem;
+    font-weight: 750;
+  }
+
+  :root body .university svg { width: 1.65rem; }
+
+  :root body .course {
+    border-left: 0;
+    padding-left: 0;
+    letter-spacing: .04em;
+  }
+
+  :root body .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 19rem);
+    align-items: start;
+    gap: 1.25rem 2rem;
+    border: 1px solid var(--classroom-line);
+    border-top: 4px solid var(--classroom-navy);
+    border-radius: .65rem;
+    padding: clamp(1rem, 3vw, 2rem);
+    background: #fff;
+    color: var(--classroom-navy);
+    box-shadow: none;
+  }
+
+  :root body .hero::before,
+  :root body .hero::after,
+  :root body .hero-shield,
+  :root body .hero-art,
+  :root body .pc-shield,
+  :root body .pc-envelope {
+    display: none;
+  }
+
+  :root body .hero-copy { grid-column: 1; }
+
+  :root body .hero h1 {
+    margin: 0 0 .6rem;
+    color: var(--classroom-navy);
+    font-size: clamp(2rem, 4vw, 3.3rem);
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: -.045em;
+    line-height: 1.05;
+    text-shadow: none;
+  }
+
+  :root body .hero h1 br { display: none; }
+  :root body .hero h1 br::after { content: " "; }
+  :root body .hero h1 span { color: inherit; }
+  :root body .hero h1 br + span::before { content: " "; white-space: pre; }
+
+  :root body .hero p {
+    color: #41536b;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  :root body .mission,
+  :root body .pc-mission {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 1rem 0 0;
+    border: 0;
+    border-top: 1px solid var(--classroom-line);
+    border-radius: 0;
+    background: transparent;
+    color: #41536b;
+  }
+
+  :root body .mission h2,
+  :root body .pc-mission h2 {
+    margin: 0 0 .45rem;
+    padding: 0;
+    background: transparent;
+    color: var(--classroom-navy);
+    font-size: 1rem;
+  }
+
+  :root body .mission ul,
+  :root body .pc-mission ul {
+    display: block;
+    padding-left: 1.15rem;
+    list-style: disc;
+  }
+
+  :root body .mission li,
+  :root body .pc-mission li { display: list-item; }
+
+  :root body .mission span[aria-hidden],
+  :root body .pc-mission span[aria-hidden],
+  :root body .score-label span[aria-hidden],
+  :root body .board-heading h2 span[aria-hidden] {
+    display: none;
+  }
+
+  :root body .scorecard {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    gap: .55rem;
+    padding: .9rem 1rem;
+    border: 1px solid var(--classroom-line);
+    border-radius: .5rem;
+    background: #f7f9fc;
+    color: var(--classroom-navy);
+    box-shadow: none;
+  }
+
+  :root body #score { font-size: 2rem; }
+
+  :root body .streaks > div,
+  :root body .pc-streaks > div {
+    border-color: var(--classroom-line);
+    border-radius: .35rem;
+    background: #fff;
+  }
+
+  :root body .game { margin-top: 1.6rem; }
+
+  :root body .board-heading h2 {
+    font-size: 1.45rem;
+    font-weight: 750;
+    letter-spacing: -.02em;
+  }
+
+  :root body #restart,
+  :root body #pc-music-toggle {
+    border-color: #aebdd0;
+    border-radius: .35rem;
+    box-shadow: none;
+  }
+
+  :root body .board {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: .75rem;
+  }
+
+  :root body .category {
+    grid-template-rows: 4.6rem repeat(5, minmax(2.9rem, auto));
+    gap: .4rem;
+  }
+
+  .board .category:nth-child(1) { --classroom-category: #224878; }
+  .board .category:nth-child(2) { --classroom-category: #864b3b; }
+  .board .category:nth-child(3) { --classroom-category: #245c61; }
+  .board .category:nth-child(4) { --classroom-category: #574779; }
+  .board .category:nth-child(5) { --classroom-category: #325675; }
+  .board .category:nth-child(6) { --classroom-category: #385e48; }
+
+  :root body .category h3 {
+    display: grid;
+    place-items: center;
+    margin: 0;
+    padding: .55rem;
+    border: 0;
+    border-radius: .4rem .4rem 0 0;
+    background: var(--classroom-category);
+    color: #fff;
+    box-shadow: none;
+    text-shadow: none;
+    text-align: center;
+    font-size: .94rem;
+    line-height: 1.2;
+  }
+
+  :root body .category h3 svg { display: none; }
+
+  :root body .tile {
+    border: 1px solid var(--classroom-line);
+    border-radius: .3rem;
+    background: #fff;
+    color: var(--classroom-navy);
+    box-shadow: none;
+    font-size: 1.2rem;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    transition: background-color .15s ease, border-color .15s ease;
+  }
+
+  :root body .tile:hover:not(:disabled),
+  :root body .tile:active:not(:disabled) {
+    transform: none;
+    border-color: #a47513;
+    background: #fff4d4;
+    box-shadow: none;
+  }
+
+  :root body .tile[data-result="correct"] {
+    background: #e8f2eb;
+    color: #22533b;
+  }
+
+  :root body .tile[data-result="incorrect"] {
+    background: #f3ece7;
+    color: #693c2b;
+  }
+
+  :root body dialog {
+    border-radius: .6rem;
+    box-shadow: 0 10px 30px #071d4926;
+  }
+
+  :root body .choice { border-radius: .35rem; }
+
+  :root body :focus-visible {
+    outline: 3px solid #a56a00;
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 59rem) {
+    :root body .board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 38rem) {
+    :root body .hero { grid-template-columns: minmax(0, 1fr); }
+    :root body .hero-copy,
+    :root body .mission,
+    :root body .pc-mission,
+    :root body .scorecard { grid-column: 1; grid-row: auto; }
+    :root body .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root body .tile { transition: none; }
+  }
+</style>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -1514,6 +1768,373 @@
             button.disabled = false;
           }
         });
+      })();
+    </script>
+    <style>
+      html body.pc-reference {
+        background: #eaf2fb;
+        color: #102443;
+      }
+    
+      html body.pc-reference .wrap {
+        width: min(90rem, calc(100% - clamp(2rem, 4vw, 4rem)));
+      }
+    
+      html body.pc-reference .masthead {
+        background: #fff;
+        border-bottom: 4px solid #ffb81c;
+      }
+    
+      html body.pc-reference .masthead .wrap {
+        min-height: 4.4rem;
+        justify-content: space-between;
+      }
+    
+      html body.pc-reference .university {
+        color: #071d49;
+        font-size: clamp(1rem, 1.8vw, 1.35rem);
+        font-weight: 800;
+      }
+    
+      html body.pc-reference .university svg { display: none; }
+    
+      html body.pc-reference .course {
+        padding-left: clamp(.5rem, 2vw, 2rem);
+        border-left: 1px solid #a9bcd3;
+        color: #0c3468;
+        font-weight: 800;
+      }
+    
+      html body.pc-reference .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.95fr) minmax(0, 1.1fr) minmax(14rem, 1fr);
+        align-items: center;
+        gap: clamp(1rem, 2.35vw, 2rem);
+        margin-top: 1.7rem;
+        padding: clamp(1.15rem, 2.5vw, 2.35rem);
+        border: 0;
+        border-radius: 1.55rem;
+        background: #092449;
+        color: #fff;
+        box-shadow: none;
+      }
+    
+      html body.pc-reference .hero::before,
+      html body.pc-reference .hero::after,
+      html body.pc-reference .hero-shield,
+      html body.pc-reference .hero-art,
+      html body.pc-reference .pc-shield,
+      html body.pc-reference .pc-envelope {
+        display: none;
+      }
+    
+      html body.pc-reference .hero-copy {
+        grid-column: auto;
+        grid-row: auto;
+        min-width: 0;
+      }
+    
+      html body.pc-reference .hero h1 {
+        margin: 0 0 .9rem;
+        padding-left: clamp(.65rem, 1.6vw, 1.25rem);
+        border-left: .35rem solid #ffb81c;
+        color: #fff;
+        font-size: clamp(2rem, 3.65vw, 3.65rem);
+        font-style: normal;
+        font-weight: 850;
+        letter-spacing: -.045em;
+        line-height: 1.08;
+        text-shadow: none;
+      }
+    
+      html body.pc-reference .hero h1 span { color: #ffca4b; }
+    
+      html body.pc-reference .hero-copy p {
+        margin: 0;
+        color: #e5edf8;
+        font-size: clamp(1rem, 1.4vw, 1.2rem);
+        line-height: 1.55;
+      }
+    
+      .pc-reference-mission {
+        align-self: stretch;
+        display: grid;
+        align-content: center;
+        min-width: 0;
+        padding-left: clamp(1rem, 2.4vw, 2rem);
+        border-left: 1px solid #8198b7;
+      }
+    
+      .pc-reference-mission h2 {
+        margin: 0 0 .75rem;
+        color: #fff;
+        font-size: clamp(1.15rem, 1.75vw, 1.5rem);
+      }
+    
+      .pc-reference-mission ul {
+        display: grid;
+        gap: .55rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        color: #eef4fc;
+      }
+    
+      .pc-reference-mission li {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: .55rem;
+        align-items: start;
+        font-size: .95rem;
+        line-height: 1.35;
+      }
+    
+      .pc-reference-mission .mission-check {
+        display: grid;
+        place-items: center;
+        width: 1rem;
+        height: 1rem;
+        margin-top: .12rem;
+        border: 1px solid #ffca4b;
+        border-radius: .2rem;
+        color: #ffca4b;
+        font-size: .75rem;
+        line-height: 1;
+      }
+    
+      html body.pc-reference .scorecard {
+        grid-column: auto;
+        grid-row: auto;
+        gap: .5rem;
+        min-width: 0;
+        padding: .9rem 1rem;
+        border: 1px solid #d9e5f2;
+        border-radius: 1rem;
+        background: #f9fbfe;
+        color: #071d49;
+        box-shadow: none;
+      }
+    
+      html body.pc-reference #score { font-size: 2rem; }
+    
+      html body.pc-reference .scorecard progress {
+        height: .65rem;
+        accent-color: #145bce;
+      }
+    
+      html body.pc-reference .streaks > div,
+      html body.pc-reference .pc-streaks > div {
+        border: 1px solid #d5e1ef;
+        border-radius: .55rem;
+        background: #e8f0fa;
+      }
+    
+      html body.pc-reference .game { margin-top: 1.8rem; }
+    
+      html body.pc-reference .board-heading {
+        gap: .65rem 1rem;
+        margin-bottom: 1rem;
+      }
+    
+      html body.pc-reference .board-heading h2 {
+        display: inline-flex;
+        align-items: center;
+        gap: .65rem;
+        color: #071d49;
+        font-size: clamp(1.55rem, 2.8vw, 2.25rem);
+        font-weight: 850;
+        letter-spacing: -.035em;
+      }
+    
+      .pc-reference-board-icon {
+        width: 1.25em;
+        height: 1.25em;
+        flex: none;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    
+      .pc-reference-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+      }
+    
+      html body.pc-reference #restart,
+      html body.pc-reference #music,
+      html body.pc-reference #pc-music-toggle {
+        padding-inline: .85rem;
+        border: 1px solid #7594ba;
+        border-radius: 2rem;
+        background: #fff;
+        color: #092449;
+        box-shadow: none;
+      }
+    
+      html body.pc-reference #music[aria-pressed="true"],
+      html body.pc-reference #pc-music-toggle[aria-pressed="true"] {
+        background: #fff1c0;
+        border-color: #a57513;
+      }
+    
+      html body.pc-reference .board {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: .5rem;
+      }
+    
+      html body.pc-reference .category {
+        grid-template-rows: 4.45rem repeat(5, minmax(2.9rem, auto));
+        gap: .45rem;
+      }
+    
+      .pc-reference .category:nth-child(1) { --reference-category: #153a70; }
+      .pc-reference .category:nth-child(2) { --reference-category: #af3e22; }
+      .pc-reference .category:nth-child(3) { --reference-category: #08636b; }
+      .pc-reference .category:nth-child(4) { --reference-category: #51348c; }
+      .pc-reference .category:nth-child(5) { --reference-category: #155d9c; }
+      .pc-reference .category:nth-child(6) { --reference-category: #246137; }
+    
+      html body.pc-reference .category h3 {
+        display: grid;
+        place-items: center;
+        margin: 0;
+        padding: .55rem;
+        border: 0;
+        border-radius: .65rem;
+        background: var(--reference-category);
+        color: #fff;
+        box-shadow: none;
+        text-align: center;
+        text-shadow: none;
+        font-size: clamp(.93rem, 1.35vw, 1.15rem);
+        font-weight: 800;
+        line-height: 1.2;
+      }
+    
+      html body.pc-reference .category h3 svg { display: none; }
+    
+      html body.pc-reference .tile {
+        border: 1px solid #bd830d;
+        border-radius: .6rem;
+        background: #fffdf6;
+        color: #071d49;
+        box-shadow: none;
+        font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+        font-weight: 850;
+        font-variant-numeric: tabular-nums;
+      }
+    
+      html body.pc-reference .tile:hover:not(:disabled),
+      html body.pc-reference .tile:active:not(:disabled) {
+        transform: none;
+        background: #fff0bd;
+        box-shadow: none;
+      }
+    
+      html body.pc-reference .tile[data-result="correct"] {
+        background: #e7f2eb;
+        border-color: #78a68a;
+        color: #21543a;
+      }
+    
+      html body.pc-reference .tile[data-result="incorrect"] {
+        background: #f5ece7;
+        border-color: #bb9788;
+        color: #713d2a;
+      }
+    
+      html body.pc-reference :focus-visible {
+        outline: 3px solid #a36400;
+        outline-offset: 3px;
+      }
+    
+      @media (max-width: 65rem) {
+        html body.pc-reference .hero {
+          grid-template-columns: minmax(0, 1.35fr) minmax(13rem, 1fr);
+        }
+    
+        html body.pc-reference .hero-copy { grid-column: 1 / -1; }
+    
+        .pc-reference-mission {
+          padding-left: 0;
+          border-left: 0;
+        }
+      }
+    
+      @media (max-width: 56rem) {
+        html body.pc-reference .board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      }
+    
+      @media (max-width: 38rem) {
+        html body.pc-reference .hero { grid-template-columns: minmax(0, 1fr); }
+        html body.pc-reference .hero-copy { grid-column: auto; }
+        html body.pc-reference .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+    </style>
+    
+    <script>
+      (() => {
+        function applyReferenceStyle() {
+          const hero = document.querySelector(".hero");
+          const title = hero?.querySelector("h1");
+          const scorecard = hero?.querySelector(".scorecard");
+          const boardHeading = document.querySelector(".board-heading");
+          if (!title || !scorecard || !boardHeading) return;
+    
+          document.body.classList.add("pc-reference");
+          title.replaceChildren("Phishing ", Object.assign(document.createElement("span"), {
+            textContent: "Challenge"
+          }));
+    
+          if (!hero.querySelector(".pc-reference-mission")) {
+            hero.querySelector(".pc-mission, .mission")?.remove();
+            const mission = document.createElement("aside");
+            mission.className = "pc-reference-mission";
+            mission.setAttribute("aria-labelledby", "pc-reference-mission-title");
+            mission.innerHTML = `
+              <h2 id="pc-reference-mission-title">Your Mission</h2>
+              <ul>
+                <li><span class="mission-check" aria-hidden="true">✓</span>Build your phishing awareness.</li>
+                <li><span class="mission-check" aria-hidden="true">✓</span>Spot common scams and red flags.</li>
+                <li><span class="mission-check" aria-hidden="true">✓</span>Learn how to respond safely and confidently.</li>
+              </ul>`;
+            scorecard.before(mission);
+          }
+    
+          const heading = boardHeading.querySelector("h2");
+          if (heading) {
+            heading.innerHTML = `
+              <svg class="pc-reference-board-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 7h8c3 0 4 2 5 5l1 4c.5 2-1.5 3-3 2l-3-3H8l-3 3c-1.5 1-3.5 0-3-2l1-4c1-3 2-5 5-5Z"/>
+                <path d="M8 9v4m-2-2h4m5-1h.01m3 2h.01"/>
+              </svg>
+              Game Board`;
+          }
+    
+          const restart = document.getElementById("restart");
+          const music = document.querySelector("#music, #pc-music-toggle");
+          let actions = boardHeading.querySelector(".actions, .pc-reference-actions");
+          if (!actions) {
+            actions = document.createElement("div");
+            actions.className = "pc-reference-actions";
+            boardHeading.append(actions);
+          }
+    
+          if (music) actions.append(music);
+          if (restart) {
+            restart.textContent = "Restart Game";
+            actions.append(restart);
+          }
+        }
+    
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", applyReferenceStyle, { once: true });
+        } else {
+          applyReferenceStyle();
+        }
       })();
     </script>
   </body>
